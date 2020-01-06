@@ -1,0 +1,180 @@
+
+<div class="form">
+ <div class="date-form">
+  <form class="date-form" [formGroup]="datesorting" (ngSubmit)="sort(datesorting)" >
+  <mat-form-field>
+    <input matInput [matDatepicker]="picker" formControlName="startdate" placeholder="Choose a start date">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput [matDatepicker]="picker1" formControlName="enddate" placeholder="Choose a end date">
+    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+    <mat-datepicker   #picker1></mat-datepicker>
+  </mat-form-field>
+  <button color="primary" mat-raised-button type="submit" [disabled]=datesorting.invalid>Submit</button>
+  <!-- <button mat-raised-button color="accent" [disabled]= datesorting.valid (click)="default()">Total Count</button> -->
+  </form> 
+ </div>
+
+ <div *ngIf="loading" class="date-form">
+  <form  class="date-form" [formGroup]="selectCenter" (ngSubmit)="sortByCenter(selectCenter)" >
+    <mat-form-field>
+      <mat-select placeholder="Center Name" formControlName="centerName">
+        <mat-option *ngFor="let center of centernameList" [value]="center">{{center}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <button color="primary" mat-raised-button type="submit">Based on center</button>
+  </form>
+ </div>
+  <div *ngIf="progressBar" class="loading-progess">
+    <mat-spinner style="margin:0 auto;"></mat-spinner>
+  </div>
+ 
+  
+  <div  *ngIf="loading"  class="date-form">
+    <table align="center"  class="table table-bordered"  >
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Number of adult males</th>
+            <td>{{patientInfo.adult_male}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of adult females</th>
+            <td>{{patientInfo.adult_female}}</td>
+           
+          </tr>
+          <tr>
+            <th scope="row">Number of male children (0-18)</th>
+            <td>{{patientInfo.male_child}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of female children (0-18)</th>
+            <td>{{patientInfo.female_child}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of males >65</th>
+            <td>{{patientInfo.male_65}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of females >65</th>
+            <td>{{patientInfo.female_65}}</td>
+          </tr>
+        </tbody>
+      </table>
+      <h2 style="color: blue;">Blood Glucose Test Result</h2>
+      <table  align="center"  class="table table-bordered"  >
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Blood Glucose below 50 mg/dl</th>
+            <td>{{bgCount.result_50less}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Blood Glucose above 400 mg/dl</th>
+            <td>{{bgCount.result_400plus}}</td>
+           
+          </tr>
+        </tbody>
+      </table>
+      <h2 style="color: blue;">Cholesterol Test Result</h2>
+      <table align="center"    class="table table-bordered"  >
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Number of adults above 240 mg/dl</th>
+            <td>{{cholesterolCounts.adults_cholesterol}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children above 200 mg/dl</th>
+            <td>{{cholesterolCounts.child_cholesterol}}</td>
+           
+          </tr>
+        </tbody>
+      </table>
+      <h2 style="color: blue;">Uric Acid Test Result</h2>
+      <table align="center"   class="table table-bordered"  >
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Number of Males below 4 mg/dl</th>
+            <td>{{uric_acidCounts.male_below_4}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of Males above 8.5 mg/dl</th>
+            <td>{{uric_acidCounts.male_above_8}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of Females below 2.7 mg/dl</th>
+            <td>{{uric_acidCounts.female_below_2}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of Females above 7.3 mg/dl</th>
+            <td>{{uric_acidCounts.female_above_7}}</td>
+          </tr>
+        </tbody>
+      </table   >
+      <h2 style="color: blue;">Hemoglobin Test Result</h2>
+      <table align="center"   class="table table-bordered"  >
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Number of adult females below 12 g/dl</th>
+            <td>{{hemoglobincount.adult_female}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of adult males below 13.5 g/dl</th>
+            <td>{{hemoglobincount.adult_male}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children up to 5 years below 11 g/dl</th>
+            <td>{{hemoglobincount.child_below_5}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children 6-14 years below 12 g/dl</th>
+            <td>{{hemoglobincount.child_6_to_14}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children 15-18 males below 13.5g/dl</th>
+            <td>{{hemoglobincount.childmale_15_to_18}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children 15-18 females below 12 g/dl</th>
+            <td>{{hemoglobincount.childfemale_15_to_18}}</td>
+          </tr>
+          <tr>
+            <th scope="row">Number above 18 g/dl</th>
+            <td>{{hemoglobincount.above_18}}</td>
+          </tr>
+        </tbody>
+      </table>
+    
+  </div>
+
+</div>
