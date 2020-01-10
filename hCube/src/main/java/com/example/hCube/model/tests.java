@@ -7,6 +7,12 @@ public class tests {
 	String name;
 	String result;
 	String startTime;
+	String centerId;
+	
+	public String getCenterId() {
+		return centerId;
+	}
+
 	public String getStartTime() {
 		return startTime;
 	}

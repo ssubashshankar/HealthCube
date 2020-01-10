@@ -1,0 +1,25 @@
+body {
+    font-family: "Arial";
+    font-color: #2e2e2e;
+    background-color: red;
+}
+
+h1 {
+	color:  purple;
+    text-align: center;
+}
+
+
+
+div {
+    margin: auto;
+    width: auto;
+    max-width: 800px;
+    margin-bottom: 30px;
+}
+
+input, textarea {
+    font-size: 13px;
+    padding: 5px;
+    width: 100%;
+}

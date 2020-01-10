@@ -24,3 +24,11 @@
 .loading-progess{
   margin-top: 5%;
 }
+.mat-progress-bar {
+    height: 17px;
+}
+.jumbotron{
+    text-align: center;
+    margin: 30%;
+    margin-top: 0%;
+}

@@ -1,3 +1,8 @@
+<div *ngIf="hide"   style="text-align: center; margin: 5%;">
+  <button color="primary" mat-raised-button (click)="getWeeklyData()">Get Weekly Report</button>
+</div>
+
+
 
 <div class="form">
  <div class="date-form">
@@ -17,7 +22,7 @@
   </form> 
  </div>
 
- <div *ngIf="loading" class="date-form">
+ <div *ngIf="hide" class="date-form">
   <form  class="date-form" [formGroup]="selectCenter" (ngSubmit)="sortByCenter(selectCenter)" >
     <mat-form-field>
       <mat-select placeholder="Center Name" formControlName="centerName">
@@ -32,7 +37,7 @@
   </div>
  
   
-  <div  *ngIf="loading"  class="date-form">
+  <div  *ngIf="hide"  class="date-form" >
     <table align="center"  class="table table-bordered"  >
         <thead>
           <tr>
@@ -68,7 +73,7 @@
           </tr>
         </tbody>
       </table>
-      <h2 style="color: blue;">Blood Glucose Test Result</h2>
+      <h2 style="color: blue;">Blood Glucose Test Result : Total Count = {{bgCount.total_blood_glucose_testcount}}</h2>
       <table  align="center"  class="table table-bordered"  >
         <thead>
           <tr>
@@ -88,7 +93,7 @@
           </tr>
         </tbody>
       </table>
-      <h2 style="color: blue;">Cholesterol Test Result</h2>
+      <h2 style="color: blue;">Cholesterol Test Result : Totel Count = {{cholesterolCounts.cholesterol_total_count}}</h2>
       <table align="center"    class="table table-bordered"  >
         <thead>
           <tr>
@@ -108,7 +113,7 @@
           </tr>
         </tbody>
       </table>
-      <h2 style="color: blue;">Uric Acid Test Result</h2>
+      <h2 style="color: blue;">Uric Acid Test Result : Total Count = {{uric_acidCounts.uric_acid_total_count}}</h2>
       <table align="center"   class="table table-bordered"  >
         <thead>
           <tr>
@@ -135,7 +140,7 @@
           </tr>
         </tbody>
       </table   >
-      <h2 style="color: blue;">Hemoglobin Test Result</h2>
+      <h2 style="color: blue;">Hemoglobin Test Result : Total Count = {{hemoglobincount.total_count}}</h2>
       <table align="center"   class="table table-bordered"  >
         <thead>
           <tr>
@@ -177,4 +182,17 @@
     
   </div>
 
+</div>
+
+<div *ngIf="loading"  style="text-align: center;">
+  <button color="accent" mat-raised-button (click)="outlierCenter()">Send the Report</button>
+</div>
+
+<div>
+  <div *ngIf="sendingstatus" class="loading-progess">
+    <mat-spinner color="warn" style="margin:0 auto;"></mat-spinner>
+</div>
+<div *ngIf="mailsent" class="jumbotron">
+  Mail Sent
+</div>
 </div>

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.lucene.analysis.CharArrayMap.EntrySet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.hCube.model.DateRange;
@@ -15,7 +16,6 @@ import com.example.hCube.model.ezdx_visits;
 import com.example.hCube.model.patients;
 import com.example.hCube.model.tests;
 import com.example.hCube.repository.ezdx_visitsRepo;
-import com.example.hCube.repository.organizationRepo;
 import com.example.hCube.repository.patientsRepo;
 
 @Service
@@ -27,8 +27,9 @@ public class hcPatientsService {
 	@Autowired
 	ezdx_visitsRepo ezdxrepo;
 	
-	@Autowired
-	organizationRepo organizationrepo;
+	
+	final HashSet<String> outlier_center= new HashSet<String>();
+
 	
 	public List<patients> patientsDetail() 
 	{
@@ -43,10 +44,10 @@ public class hcPatientsService {
 		map.put("adult_female", 0);
 		map.put("male_child", 0);
 		map.put("female_child", 0);
-		map.put("male_65", 0);
+		map.put("male_65", 0); 
 		map.put("female_65", 0);
 		SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
-		if (!dates.getCenterName().equals("") ) {
+		if (!dates.getCenterName().equals("") && !dates.getCenterName().equals(null) ) {
 			for ( Entry<String, String> iterable_elemen : patientsCenterName(dates).entrySet()) {
 				if (iterable_elemen.getKey().toString().equals(dates.getCenterName().toString())) {
 					patientsDetail().forEach(result->{
@@ -152,24 +153,43 @@ public class hcPatientsService {
 			});
 		return testlist;
 	}
+	
+	public List<String> checkCenterName(DateRange dates)
+	{
+		List<String> wanted_centerNames = new ArrayList<String>();
+		if (!outlier_center.isEmpty()) {
+			for (Entry<String, String> iterable_elemen : patientsCenterName(dates).entrySet()) {
+				if (outlier_center.contains(iterable_elemen.getValue())) {
+					wanted_centerNames.add(iterable_elemen.getKey());
+				}
+			}
+		}
+		return wanted_centerNames;
+	}
+	
+	
 	public HashMap<String, Integer> bloodGlucoseTestCount(DateRange dates)
 	{
 		
 		HashMap<String, Integer> bg= new HashMap<String, Integer>();
 		bg.put("result_50less", 0);
 		bg.put("result_400plus", 0);
+		bg.put("total_blood_glucose_testcount", 0);
 		testList(dates).forEach(result->{
 			if (result.getName().toString().equals("BLOOD_GLUCOSE")) {
+				bg.put("total_blood_glucose_testcount", bg.get("total_blood_glucose_testcount")+1);
 				double testResult = Double.parseDouble(result.getResult());
 				if (testResult < 50) {
+					outlier_center.add(result.getCenterId().toString());
 					bg.put("result_50less", bg.get("result_50less")+1);	
 				}else if(testResult > 400)
 				{
+					outlier_center.add(result.getCenterId().toString());
 					bg.put("result_400plus", bg.get("result_400plus")+1);
 				}
 			}
 		});
-		
+		 
 		return bg;
 	}
 
@@ -178,6 +198,7 @@ public class hcPatientsService {
 		HashMap<String, Integer> cholesterolTest= new HashMap<String, Integer>();
 		cholesterolTest.put("adults_cholesterol", 0);
 		cholesterolTest.put("child_cholesterol", 0);
+		cholesterolTest.put("cholesterol_total_count",	0);
 		List<String> adult_List = new ArrayList<String>();
 		List<String> child_List = new ArrayList<String>();
 		patientsDetail().forEach(result->{
@@ -188,24 +209,25 @@ public class hcPatientsService {
 				child_List.add(result.get_id());
 			}
 		});
-		
+		   
 		
 		
 		testList(dates).stream().forEach(result->{
-			if (child_List.contains(result.getPatientId())) {
-				if (result.getName().toString().equals("CHOLESTEROL")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult > 200) {
-						cholesterolTest.put("child_cholesterol", cholesterolTest.get("child_cholesterol")+1);
-					}
-				}
-			}else if(adult_List.contains(result.getPatientId()))
-			{
-				if (result.getName().toString().equals("CHOLESTEROL")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult > 240) {
-						cholesterolTest.put("adults_cholesterol", cholesterolTest.get("adults_cholesterol")+1);
-					}
+			if (result.getName().toString().equals("CHOLESTEROL")) {
+				cholesterolTest.put("cholesterol_total_count", cholesterolTest.get("cholesterol_total_count")+1);
+				if (child_List.contains(result.getPatientId())) {
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult > 200) {
+							outlier_center.add(result.getCenterId().toString());
+							cholesterolTest.put("child_cholesterol", cholesterolTest.get("child_cholesterol")+1);
+						}
+				}else if(adult_List.contains(result.getPatientId()))
+				{
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult > 240) {
+							outlier_center.add(result.getCenterId().toString());
+							cholesterolTest.put("adults_cholesterol", cholesterolTest.get("adults_cholesterol")+1);
+						}
 				}
 			}
 		});
@@ -220,6 +242,7 @@ public class hcPatientsService {
 		uric_Acid.put("male_above_8", 0);
 		uric_Acid.put("female_below_2", 0);
 		uric_Acid.put("female_above_7", 0);
+		uric_Acid.put("uric_acid_total_count", 0);
 	
 		List<String> males_List = new ArrayList<String>();
 		List<String> females_List = new ArrayList<String>();
@@ -233,28 +256,31 @@ public class hcPatientsService {
 		});
 		
 		testList(dates).stream().forEach(result->{
-			if (males_List.contains(result.getPatientId())) { 
-				if (result.getName().toString().equals("URIC_ACID")) {
-					if(result.getResult() != null)
-					{
-						double testResult = Double.parseDouble(result.getResult());
-						if (testResult < 4) {
-							uric_Acid.put("male_below_4", uric_Acid.get("male_below_4")+1);
-						}else if (testResult > 8.5) {
-							uric_Acid.put("male_above_8", uric_Acid.get("male_above_8")+1);
+			if (result.getName().toString().equals("URIC_ACID")) {
+				uric_Acid.put("uric_acid_total_count", uric_Acid.get("uric_acid_total_count")+1);
+				if (males_List.contains(result.getPatientId())) { 
+						if(result.getResult() != null)
+						{
+							double testResult = Double.parseDouble(result.getResult());
+							if (testResult < 4) {
+								outlier_center.add(result.getCenterId().toString());
+								uric_Acid.put("male_below_4", uric_Acid.get("male_below_4")+1);
+							}else if (testResult > 8.5) {
+								outlier_center.add(result.getCenterId().toString());
+								uric_Acid.put("male_above_8", uric_Acid.get("male_above_8")+1);
+							}
 						}
-					}
-				}
-			}else if(females_List.contains(result.getPatientId()))
-			{
-				if (result.getName().toString().equals("URIC_ACID")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult < 2.7) {
-						uric_Acid.put("female_below_2", uric_Acid.get("female_below_2")+1);
-					}else if (testResult > 7.3) {
-						uric_Acid.put("female_above_7", uric_Acid.get("female_above_7")+1);
-					}
-				}
+				}else if(females_List.contains(result.getPatientId()))
+				{
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult < 2.7) {
+							outlier_center.add(result.getCenterId().toString());
+							uric_Acid.put("female_below_2", uric_Acid.get("female_below_2")+1);
+						}else if (testResult > 7.3) {
+							outlier_center.add(result.getCenterId().toString());
+							uric_Acid.put("female_above_7", uric_Acid.get("female_above_7")+1);
+						}
+				}	
 			}
 		});
 		return uric_Acid;
@@ -297,55 +323,52 @@ public class hcPatientsService {
 		hemoglobin.put("child_6_to_14", 0);
 		hemoglobin.put("childfemale_15_to_18", 0);
 		hemoglobin.put("above_18", 0);
+		hemoglobin.put("total_count", 0);
 		testList(dates).forEach(result->{
-			if (adult_male.contains(result.getPatientId())) {
-				if (result.getName().toString().equals("HEMOGLOBIN")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult < 13.5) {
-						hemoglobin.put("adult_male", hemoglobin.get("adult_male")+1);
-					}
-				}
-			}else if (adult_female.contains(result.getPatientId())) {
-				if (result.getName().toString().equals("HEMOGLOBIN")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult < 12) {
-						hemoglobin.put("adult_female", hemoglobin.get("adult_female")+1);
-					}
-				}
-			}else if (child_below_5.contains(result.getPatientId())) {
-				if (result.getName().toString().equals("HEMOGLOBIN")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult < 11) {
-						hemoglobin.put("child_below_5", hemoglobin.get("child_below_5")+1);
-					}
-				}
-			}else if (childmale_15_to_18.contains(result.getPatientId())) {
-				if (result.getName().toString().equals("HEMOGLOBIN")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult < 13.5) {
-						hemoglobin.put("childmale_15_to_18", hemoglobin.get("childmale_15_to_18")+1);
-					}
-				}
-			}else if (child_6_to_14.contains(result.getPatientId())) {
-				if (result.getName().toString().equals("HEMOGLOBIN")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult < 12) {
-						hemoglobin.put("child_6_to_14", hemoglobin.get("child_6_to_14")+1);
-					}
-				}
-			}else if (childfemale_15_to_18.contains(result.getPatientId())) {
-				if (result.getName().toString().equals("HEMOGLOBIN")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult < 12) {
-						hemoglobin.put("childfemale_15_to_18", hemoglobin.get("childfemale_15_to_18")+1);
-					}
-				}
-			}else {
-				if (result.getName().toString().equals("HEMOGLOBIN")) {
-					double testResult = Double.parseDouble(result.getResult());
-					if (testResult > 18 ) {
-						hemoglobin.put("above_18", hemoglobin.get("above_18")+1);
-					}
+			if (result.getName().toString().equals("HEMOGLOBIN")) {
+				hemoglobin.put("total_count", hemoglobin.get("total_count")+1);
+				if (adult_male.contains(result.getPatientId())) {
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult < 13.5) {
+							outlier_center.add(result.getCenterId().toString());
+							hemoglobin.put("adult_male", hemoglobin.get("adult_male")+1);
+						}
+				}else if (adult_female.contains(result.getPatientId())) {
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult < 12) {
+							outlier_center.add(result.getCenterId().toString());
+							hemoglobin.put("adult_female", hemoglobin.get("adult_female")+1);
+						}
+				}else if (child_below_5.contains(result.getPatientId())) {
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult < 11) {
+							outlier_center.add(result.getCenterId().toString());
+							hemoglobin.put("child_below_5", hemoglobin.get("child_below_5")+1);
+						}
+				}else if (childmale_15_to_18.contains(result.getPatientId())) {
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult < 13.5) {
+							outlier_center.add(result.getCenterId().toString());
+							hemoglobin.put("childmale_15_to_18", hemoglobin.get("childmale_15_to_18")+1);
+						}
+				}else if (child_6_to_14.contains(result.getPatientId())) {
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult < 12) {
+							outlier_center.add(result.getCenterId().toString());
+							hemoglobin.put("child_6_to_14", hemoglobin.get("child_6_to_14")+1);
+						}
+				}else if (childfemale_15_to_18.contains(result.getPatientId())) {
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult < 12) {
+							outlier_center.add(result.getCenterId().toString());
+							hemoglobin.put("childfemale_15_to_18", hemoglobin.get("childfemale_15_to_18")+1);
+						}
+				}else {
+						double testResult = Double.parseDouble(result.getResult());
+						if (testResult > 18 ) {
+							outlier_center.add(result.getCenterId().toString());
+							hemoglobin.put("above_18", hemoglobin.get("above_18")+1);
+						}
 				}
 			}
 		});

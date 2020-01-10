@@ -2,6 +2,7 @@ import { Component, OnInit, OnChanges, ViewChild  } from '@angular/core';
 import { PatientsInfoService } from '../patients-info.service';
 import { FormGroup, FormBuilder, Validators, FormGroupDirective } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { async } from '@angular/core/testing';
 
 export class patient{
   public female_child : String;
@@ -15,11 +16,13 @@ export class patient{
 export class blood_glucose{
   public result_400plus : String;
   public result_50less : String;
+  public total_blood_glucose_testcount: String;
 }
 
 export class cholesterol{
   public adults_cholesterol: string;
   public child_cholesterol : string;
+  public cholesterol_total_count : String;
 }
 
 export class uric_acid{
@@ -28,6 +31,7 @@ export class uric_acid{
   public female_below_2 : string;
   public female_above_7 : String;
   public male_below_4 : String;
+  public uric_acid_total_count: string;
 }
 
 export class hemoglobin{
@@ -38,6 +42,7 @@ export class hemoglobin{
   public childmale_15_to_18 : String;
   public childfemale_15_to_18 : String;
   public above_18 : String;
+  public total_count : String;
 }
 
 export class testresult{
@@ -53,6 +58,7 @@ export class DateRange{
   public centerName : String;
 }
 
+
 @Component({
   selector: 'app-chart',
   templateUrl: './chart.component.html',
@@ -66,7 +72,7 @@ export class ChartComponent implements OnInit,OnChanges {
   loading : boolean = false;
 
   range : DateRange;
-  
+  hide : boolean = false;
 
   patientInfo : patient;
   bgCount : blood_glucose;
@@ -77,6 +83,12 @@ export class ChartComponent implements OnInit,OnChanges {
   dateResult : testresult;
 
   progressBar : boolean = false;
+
+  
+  sendingstatus = false;
+  mailsent = false;
+
+  outliers : [];
 
 
 
@@ -104,9 +116,16 @@ export class ChartComponent implements OnInit,OnChanges {
     this.bloodglucoseCount(this.range);
     this.cholesterolCount(this.range);
     this.uricacidCount(this.range);
-      this.hemoglobinCount(this.range);
+    this.hemoglobinCount(this.range);
   }
 
+  finallog(dates : DateRange)
+  {
+    this.bloodglucoseCount(dates);
+    this.cholesterolCount(dates);
+    this.uricacidCount(dates);
+    this.hemoglobinCount(dates);
+  }
 
   chartOptions = {
     responsive: true
@@ -153,16 +172,16 @@ export class ChartComponent implements OnInit,OnChanges {
 
   hemoglobinCount(dates : DateRange)
   {
-    this.patientService.gethemoglobinCount(dates).then(result=>{
-      this.hemoglobincount = result;
+    this.patientService.gethemoglobinCount(dates).then(async result=>{
+      this.hemoglobincount =await result;
       this.progressBar = false;
       this.loading = true;
-
     })
   }
 
   sort(datesorting:FormGroup)
   {
+  this.mailsent=false;
    datesorting.value.startdate =this.datePipe.transform(datesorting.value.startdate,"yyyy-MM-dd");
    datesorting.value.enddate =this.datePipe.transform(datesorting.value.enddate,"yyyy-MM-dd");
    this.range = datesorting.value;
@@ -185,5 +204,27 @@ export class ChartComponent implements OnInit,OnChanges {
     this.progressBar =true;
     this.ngOnChanges();
 
+  }
+
+  outlierCenter()
+  { 
+    this.loading = false;
+    this.sendingstatus = true;
+   setTimeout(() => {
+    this.sendingstatus = false;
+    this.mailsent = true;
+   }, 500);
+    this.patientService.getOutlierCenter(this.range).then(
+     async result=>{
+        });
+  }
+
+  getWeeklyData()
+  {
+    
+    this.patientService.getWeeklydate().subscribe(result=>{
+      console.log(result)
+
+    })
   }
 }

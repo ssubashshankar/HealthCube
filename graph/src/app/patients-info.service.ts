@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { patient, blood_glucose, cholesterol, uric_acid, hemoglobin, testresult, DateRange } from './chart/chart.component';
 
 @Injectable({
@@ -38,4 +38,30 @@ export class PatientsInfoService {
   {
     return this.http.post("http://localhost:8102/center_name",dates).toPromise();
   }
+
+  postScreenShot(screen :any)
+  {
+   console.log(screen)
+    // return this.http.post("http://localhost:8102/getscreen",{screen},{headers : new HttpHeaders({
+    //   'Content-Type': 'text/html'
+    // })})
+    var body =screen;
+    this.http.post<any>("http://localhost:8102/sendmail", body).subscribe(
+      (res) => console.log(res),
+      (err) => console.log(err)
+    );
+  }
+
+  async getOutlierCenter(dates : DateRange)
+  {
+    return this.http.post<any>("http://localhost:8102/send_report",dates,{
+      responseType :'text' as 'json'
+    }).toPromise();
+  }
+
+   getWeeklydate()
+  {
+    return this.http.get("http://localhost:8102/last_week");
+  }
 }
+ 

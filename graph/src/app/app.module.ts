@@ -11,10 +11,13 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatTableModule} from '@angular/material/table';
 
-import { MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, MatNativeDateModule, MatCheckboxModule, MatCardModule, MatTabsModule, MatStepperModule, MatOptionModule, MatSelectModule, MatProgressSpinnerModule, MatDialogModule } from '@angular/material';
+import { MatToolbarModule, MatButtonModule, MatSidenavModule, MatIconModule, MatListModule, MatFormFieldModule, MatInputModule, MatDatepickerModule, MatNativeDateModule, MatCheckboxModule, MatCardModule, MatTabsModule, MatStepperModule, MatOptionModule, MatSelectModule, MatProgressSpinnerModule, MatDialogModule, MatProgressBarModule } from '@angular/material';
 import { ReactiveFormsModule, FormsModule, FormControl } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { CenterNameComponent } from './center-name/center-name.component';
+import { WeeklyReportComponent } from './weekly-report/weekly-report.component';
+
+
 
 const route : Routes =[
   {
@@ -22,6 +25,9 @@ const route : Routes =[
   },
   {
     path : 'chart', component : ChartComponent
+  },
+  {
+    path : 'report' , component : WeeklyReportComponent
   }
 ]
 
@@ -31,7 +37,8 @@ const route : Routes =[
     AppComponent,
     ChartComponent,
     HeaderComponent,
-    CenterNameComponent
+    CenterNameComponent,
+    WeeklyReportComponent
   ],
   imports: [
     BrowserModule,
@@ -49,7 +56,9 @@ const route : Routes =[
     MatButtonModule,
     MatOptionModule,
     MatSelectModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatProgressBarModule
+  
 
     
   ],

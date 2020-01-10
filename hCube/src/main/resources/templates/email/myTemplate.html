@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html  lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+<title >Order Confirmation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+ <link th:href="@{webjars/bootstrap/3.3.6/css/bootstrap.min.css}" rel="stylesheet">
+ <link rel="stylesheet" href='css/main.css' type="text/css" />
+ <style>
+ h2{
+ color: blue;
+ }
+table {
+  border-collapse: collapse;
+}
+.emailbody{
+ border-style: solid;
+  border-color: red;
+  background-color: #eff0f1;
+  width : 70%;	
+  }
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+</style>
+</head>
+<body>
+
+	<div class="emailbody"> 
+	<div align="center">
+		<h1 th:text="${content.centerName}"></h1>
+	</div>
+	<div align="center">
+	<h2>Total Patient Test Count</h2>
+	<table>
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Number of adult males</th>
+            <td th:text="${content.patient_am}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of adult females</th>
+            <td th:text="${content.patient_af}"></td>
+           
+          </tr>
+          <tr>
+            <th scope="row">Number of male children (0-18)</th>
+            <td th:text="${content.patient_mc}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of female children (0-18)</th>
+            <td th:text="${content.patient_fc}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of males >65</th>
+            <td th:text="${content.patient_m65}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of females >65</th>
+            <td th:text="${content.patient_f65}"></td>
+          </tr>
+        </tbody>
+      </table>
+       <h1>Total Test done :  <span th:text="${content.totalTest_Count}"></span> </h1>
+      <h2 >Blood Glucose Test Result : Total Count = <span th:text="${content.bg_total}"></span></h2>
+      <table >
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Blood Glucose below 50 mg/dl</th>
+            <td  th:text="${content.bg_below}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Blood Glucose above 400 mg/dl</th>
+            <td  th:text="${content.bg_above}"></td>
+           
+          </tr>
+        </tbody>
+      </table>
+      <h2 >Cholesterol Test Result : Totel Count = <span th:text="${content.chol_total}"></span></h2>
+      <table align="center"    class="table table-bordered"  >
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Number of adults above 240 mg/dl</th>
+            <td th:text="${content.chol_adult}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children above 200 mg/dl</th>
+            <td th:text="${content.chol_child}"></td>
+           
+          </tr>
+        </tbody>
+      </table>
+      <h2 >Uric Acid Test Result : Total Count = <span th:text="${content.uric_total}"></span></h2>
+      <table align="center"   class="table table-bordered"  >
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Number of Males below 4 mg/dl</th>
+            <td th:text="${content.uric_m_below}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of Males above 8.5 mg/dl</th>
+            <td th:text="${content.uric_m_above}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of Females below 2.7 mg/dl</th>
+            <td th:text="${content.uric_f_below}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of Females above 7.3 mg/dl</th>
+            <td th:text="${content.uric_f_above}"></td>
+          </tr>
+        </tbody>
+      </table   >
+      <h2 >Hemoglobin Test Result : Total Count = <span th:text="${content.hg_total}"></span></h2>
+      <table align="center"   class="table table-bordered"  >
+        <thead>
+          <tr>
+            <th scope="col" style="width: 70%;">Label</th>
+            <th scope="col">Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Number of adult females below 12 g/dl</th>
+            <td th:text="${content.hg_af_below}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of adult males below 13.5 g/dl</th>
+            <td th:text="${content.hg_am_below}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children up to 5 years below 11 g/dl</th>
+            <td th:text="${content.hg_c5_below}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children 6-14 years below 12 g/dl</th>
+            <td th:text="${content.hg_c6_below}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children 15-18 males below 13.5g/dl</th>
+            <td th:text="${content.hg_cm_below}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number of children 15-18 females below 12 g/dl</th>
+            <td th:text="${content.hg_cf_below}"></td>
+          </tr>
+          <tr>
+            <th scope="row">Number above 18 g/dl</th>
+            <td th:text="${content.hg_above}"></td>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+ </div> 
+	<div>
+		<p>Regards,</p>
+		<p style="font-weight: bold;">Subash Shankar</p>
+	</div>
+</body>
+</html>
